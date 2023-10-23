@@ -2,25 +2,28 @@
 RED = (255,0,0)
 WHITE = (255,255,255)
 
-SCALE = 3
+SCALE = 1.5
 WEAPON_SCALE = 0.2
 SLASH_SPEED = 5
 
 BG = (0,0,0)
 
-TILE_SIZE = 64
+TILE_SIZE = 34*SCALE
 FIRST_LEVEL_MAP = [
 '                                 ',
-'XX      XXX                XX    ',
-'XX            P                   ',
-'XXX           XX              XX ',
-'XXXXXX      XXXXXX            XX ',
-'XXX     X   XXXXXXXX    XX    XX ',
-'         X               XX   XX ',
-'XXXXXXXXX               XXXXXXXX ',
-'XXXXXXXXXXX          XXXXXXXXXXXX',
-'XX                       XXXXXXXX',
-'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+'                                 ',
+'                                 ',
+'                                 ',
+'00     000                00    ',
+'01            P                   ',
+'010          00              00 ',
+'0111110      011110            00 ',
+'332233320   11111111   0011    00 ',
+'                        00   00 ',
+'11111111111               1111111111 ',
+'22222222222          01111111111110',
+'22322232322111                       111111111',
+'01111111111111000000000000000000000000000000000'
 
 ]
 

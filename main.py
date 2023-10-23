@@ -1,10 +1,10 @@
-import pygame
 import os
 
 from Level import Level
+from Mobs.Skeleton import Skeleton
 from constants import *
-from Entities import *
-from helperTools import load_animations, scale_img
+from Mobs.Entities import *
+from helperTools import scale_img
 
 #initializes Py game
 pygame.init()
