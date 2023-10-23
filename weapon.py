@@ -36,16 +36,26 @@ class Projectile(pygame.sprite.Sprite):
 
             if self.rect.right < 0 or self.rect.left > SCREEN_WIDTH or self.rect.bottom < 0 or self.rect.top > SCREEN_HEIGHT:
                 self.kill()
-
-            for enemy in enemy_list:
-                if enemy.rect.colliderect(self.rect):
-                    damage = (20 + random.randint(-5,5))
-                    damage_pos = enemy.rect.center
-                    enemy.health -= damage
-                    enemy.action = 'hit'
-                    enemy.animation_index = 0
+            try:
+                for enemy in enemy_list:
+                    if enemy.rect.colliderect(self.rect):
+                        damage = (20 + random.randint(-5,5))
+                        damage_pos = enemy.rect.center
+                        enemy.health -= damage
+                        enemy.action = 'hit'
+                        enemy.animation_index = 0
+                        enemy.move_x += self.dx * 1
+                        self.kill()
+                        break
+            except:
+                if enemy_list.rect.colliderect(self.rect):
+                    damage = (20 + random.randint(-5, 5))
+                    damage_pos = enemy_list.rect.center
+                    #enemy.action = 'hit'
+                    #enemy.animation_index = 0
+                    enemy_list.move_x += self.dx * 1
                     self.kill()
-                    break
+
 
             self.rect.x += 2 * self.dx
             return damage , damage_pos

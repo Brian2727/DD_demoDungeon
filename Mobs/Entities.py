@@ -93,6 +93,7 @@ class Character(pygame.sprite.Sprite):
 
 
     def move(self,tiles):
+
         if not self.action == 'on_air':
             if self.move_x < 0 and self.action != 'slash':
                 self.dir = -1

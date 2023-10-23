@@ -1,5 +1,7 @@
 import os
 
+import pygame as pygame
+
 from Level import Level
 from Mobs.Skeleton import Skeleton
 from constants import *
@@ -60,7 +62,11 @@ def draw_grid():
         pygame.draw.line(screen, WHITE, (0 , x * TILE_SIZE), (SCREEN_WIDTH,x*TILE_SIZE))
 
 
-
+slash_animation = []
+for i in range(len(os.listdir(f"assets/images/weapons/PurpleSlash/" ))):
+    image = pygame.image.load(f"assets/images/weapons/PurpleSlash/{i}.png" ).convert_alpha()
+    image = scale_img(image, 2)
+    slash_animation.append(image)
 
 #skeleton animation
 #creating skeleton this will be automatic eventually
@@ -77,6 +83,7 @@ skeleton = Skeleton(600,200,slash_animation,100,"skeleton")
 
 #enemies list
 enemy_list = []
+enemy_proj = pygame.sprite.Group()
 enemy_list.append(skeleton)
 
 #MainGame Loop
@@ -95,9 +102,10 @@ while (GameLive):
 
     #draw player
     for enemy in enemy_list:
-
         enemy.draw(screen)
-        enemy.update(first_level.tiles)
+        slash_wave = enemy.update(first_level.tiles,player)
+        if slash_wave:
+            enemy_proj.add(slash_wave)
 
     #draw player and update
     player.draw(screen)
@@ -113,6 +121,12 @@ while (GameLive):
         damage,damage_pos = slash.update(enemy_list)
         if damage_pos:
             damage_text_group.add(DamageText(damage_pos[0],damage_pos[1] - 10, str(damage), RED))
+
+    for slash in enemy_proj:
+        slash.draw(screen)
+        damage, damage_pos = slash.update(player)
+        if damage_pos:
+            damage_text_group.add(DamageText(damage_pos[0], damage_pos[1] - 10, str(damage), RED))
 
     #Show damage text
     damage_text_group.update()

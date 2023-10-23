@@ -1,7 +1,10 @@
+import math
+
 import pygame
 import random
 from Mobs.Entities import Character
 from helperTools import load_animations
+from weapon import Projectile
 
 
 class Skeleton(Character,pygame.sprite.Sprite):
@@ -19,6 +22,8 @@ class Skeleton(Character,pygame.sprite.Sprite):
         super().__init__(x, y,weapon_animation_list,type)
         self.type = type
         self.health = health
+        self.prev_x = self.rect.centerx
+        self.attack_range = 70
 
     def move(self,tiles):
         tick_timer = 10500
@@ -41,25 +46,68 @@ class Skeleton(Character,pygame.sprite.Sprite):
 
         #self.rect.x += self.move_x + tiles.sprites()[0].x_shift
 
-    def ai(self,player,tiles):
-        self.move_x += tiles.sprites()[0].x_shift
+    def jump(self):
+        self.move_y += self.jump_speed
 
-    def update(self,tiles):
-        self.ai(player,tiles)
+    def ai(self,player,tiles):
+        slash_spawn_time = 100
+        if not self.action == 'hit':
+            self.move_x = tiles.sprites()[0].x_shift
+        clipped_line = ()
+        attention_timer = 1500
+        line_of_sight = ((self.rect.centerx,self.rect.centery),(player.rect.centerx,player.rect.centery))
+
+        for tile in tiles:
+            if tile.rect.clipline(line_of_sight):
+                clipped_line = tile.rect.clipline(line_of_sight)
+
+        dist = math.sqrt(((self.rect.centerx - player.rect.centerx) ** 2) + ((self.rect.centery - player.rect.centery) ** 2))
+
+        if self.action == 'slash':
+            if self.animation_index == 5 and (pygame.time.get_ticks() - self.slash_animation_tick) >= slash_spawn_time:
+                print("creating Slash")
+                slash_wave = Projectile(self.weapons_animation_list, self.rect.centerx, self.rect.centery,
+                                        self.slash_dir*3)
+                slash_wave.dx = 0
+                self.slash_animation_tick = pygame.time.get_ticks()
+                return slash_wave
+        if not clipped_line and dist < 400 and not self.action == 'slash' and not self.action == 'hit' :
+            if (pygame.time.get_ticks() - self.attention_spam) > attention_timer:
+                self.prev_x = self.rect.centerx
+
+            if self.rect.centerx > player.rect.centerx and dist > 50:
+                self.move_x += -self.speed
+                self.change_action('walk')
+                self.flip = True
+            elif self.rect.centerx < player.rect.centerx and dist > 50:
+                self.move_x += self.speed
+                self.flip = False
+                self.change_action('walk')
+            else:
+                self.change_action('idle')
+
+            if self.action == 'walk' and self.prev_x == self.rect.centerx:
+                self.attention_spam = pygame.time.get_ticks()
+
+            #attack  Player
+            if dist <= self.attack_range:
+                self.change_action('slash')
+
+
+
+    def update(self,tiles,player):
+        slash_wave = self.ai(player,tiles)
         self.horizontal_movement_collition(tiles)
         self.vertical_movement_collition(tiles)
         slash_spawn_time = 2000
-        slash_wave = None
+
         if self.health <= 0:
             self.change_action('dead')
-
-        if self.action == 'walk':
+        elif self.action == 'walk':
             self.change_action('walk')
-
-        if self.action == 'idle':
+        elif self.action == 'idle':
             self.change_action('idle')
-
-        if self.action == 'hit':
+        elif self.action == 'hit':
             self.change_action('hit')
 
         #print(f"animation {self.action} and index of animation = {self.animation_index}")
