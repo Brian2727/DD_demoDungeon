@@ -1,5 +1,6 @@
 import pygame
 from Mobs.Entities import Character
+from Mobs.Skeleton import Skeleton
 from Tiles import Tile
 from constants import *
 from helperTools import scale_img, load_weapon_animation
@@ -12,6 +13,7 @@ class Level:
 
     def setup_level(self,level_data):
         self.player = pygame.sprite.GroupSingle()
+        self.enemies = pygame.sprite.Group()
         self.tiles = pygame.sprite.Group()
 
         for row_index,row in enumerate(level_data):
@@ -20,8 +22,10 @@ class Level:
                 y = row_index * TILE_SIZE
 
                 if cell == 'P':
-                    slash_animation = load_weapon_animation('BladeArk')
-                    self.player = Character(x,y,slash_animation,"Stick_Samuray")
+                    self.player = Character(x,y,"BladeArk","Straw_Hat_Samuray")
+                elif cell == 'S':
+                   skeleton = Skeleton(x, y, "PurpleSlash", 100, "skeleton")
+                   self.enemies.add(skeleton)
                 elif cell == ' ':
                     pass
                 else:
@@ -31,12 +35,12 @@ class Level:
                     self.tiles.add(tile)
 
     def scroll_x(self):
-        if self.player.rect.center[0] >= SCREEN_WIDTH-100 and self.player.dir > 0:
+        if self.player.rect.center[0] >= SCREEN_WIDTH-200 and self.player.dir > 0:
             self.player.action = 'walk'
             self.player.speed = 0
             self.player.move_x = 0
             return -2
-        elif self.player.rect.center[0] <= SCREEN_WIDTH-(SCREEN_WIDTH-55)   and self.player.dir < 0:
+        elif self.player.rect.center[0] <= SCREEN_WIDTH-(SCREEN_WIDTH-155)   and self.player.dir < 0:
             self.player.action = 'walk'
             self.player.move_x = 0
             self.player.speed = 0

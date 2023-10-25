@@ -62,15 +62,9 @@ def draw_grid():
         pygame.draw.line(screen, WHITE, (0 , x * TILE_SIZE), (SCREEN_WIDTH,x*TILE_SIZE))
 
 
-slash_animation = []
-for i in range(len(os.listdir(f"assets/images/weapons/PurpleSlash/" ))):
-    image = pygame.image.load(f"assets/images/weapons/PurpleSlash/{i}.png" ).convert_alpha()
-    image = scale_img(image, 2)
-    slash_animation.append(image)
-
 #skeleton animation
 #creating skeleton this will be automatic eventually
-skeleton = Skeleton(600,200,slash_animation,100,"skeleton")
+
 
 #character animation no longer needed since movement is inside the char class and the position is updated
 # player = Character(100,100,slash_animation,"Stick_Samuray")
@@ -82,21 +76,16 @@ skeleton = Skeleton(600,200,slash_animation,100,"skeleton")
 # moving_down  = False
 
 #enemies list
-enemy_list = []
+enemy_list = first_level.enemies
 enemy_proj = pygame.sprite.Group()
-enemy_list.append(skeleton)
+
 
 #MainGame Loop
 GameLive = True
 
 while (GameLive):
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            GameLive = False
-            break
 
     screen.fill(BG)
-    draw_grid()
     first_level.run()
     clock.tick(60)
 

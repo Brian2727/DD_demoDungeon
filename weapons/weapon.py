@@ -4,14 +4,15 @@ import random
 import pygame.sprite
 
 from constants import SLASH_SPEED, SCREEN_WIDTH, SCREEN_HEIGHT
+from helperTools import load_weapon_animation
 
 
 class Projectile(pygame.sprite.Sprite):
-        def __init__(self,animation_list,x,y,angle):
+        def __init__(self,weapon_name,x,y,angle):
             pygame.sprite.Sprite.__init__(self)
             self.angle = angle
-            self.animation_list = animation_list
-            self.original_image = animation_list[0]
+            self.animation_list = load_weapon_animation(weapon_name)
+            self.original_image = self.animation_list[0]
             self.update_time = pygame.time.get_ticks()
             self.image = pygame.transform.rotate(self.original_image,angle)
             self.animation_index = 0
@@ -24,7 +25,7 @@ class Projectile(pygame.sprite.Sprite):
             damage = 0
             damage_pos = None
 
-            animation_timer = 100
+            animation_timer = 50
             self.image =  pygame.transform.rotate(self.animation_list[self.animation_index],self.angle)
 
             if (pygame.time.get_ticks() - self.update_time) >= animation_timer:
@@ -42,8 +43,7 @@ class Projectile(pygame.sprite.Sprite):
                         damage = (20 + random.randint(-5,5))
                         damage_pos = enemy.rect.center
                         enemy.health -= damage
-                        enemy.action = 'hit'
-                        enemy.animation_index = 0
+                        enemy.change_action('hit')
                         enemy.move_x += self.dx * 1
                         self.kill()
                         break
@@ -63,3 +63,10 @@ class Projectile(pygame.sprite.Sprite):
 
         def draw(self,screen):
             screen.blit(self.image,(self.rect.centerx - int(self.image.get_width()/2),self.rect.centery - int(self.image.get_height()/2)))
+
+class Slash_Static(Projectile):
+
+    def __init__(self,animation_list,x,y,angle):
+        super().__init__(animation_list,x,y,angle)
+        self.dx = 0
+        self.time_alive = 600
