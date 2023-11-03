@@ -2,7 +2,7 @@ import pygame
 
 from constants import TILE_SIZE
 from helperTools import load_animations
-from weapons.weapon import Projectile
+from weapons.weapon import Projectile, Slash_Static
 
 
 class Character(pygame.sprite.Sprite):
@@ -14,9 +14,10 @@ class Character(pygame.sprite.Sprite):
         "jump": [],
         "on_air": []
     }
-    def __init__(self, x, y, weapons_animation_list,type):
+    def __init__(self, x, y, weapons,type):
         super().__init__()
         #movement
+        self.type = type
         self.jump_speed = -20
         self.gravity = 1
         self.dir = 0
@@ -26,7 +27,8 @@ class Character(pygame.sprite.Sprite):
         #animation
         self.slash_animation_tick = pygame.time.get_ticks()
         self.slashing = False
-        self.weapons_animation_list = weapons_animation_list
+        self.weapon_1 = weapons[0]
+        self.weapon_2 = weapons[1]
         self.animation_index = 0
         self.running = False
         self.animation_list = load_animations(type, self.animation_list)
@@ -59,6 +61,7 @@ class Character(pygame.sprite.Sprite):
                 if event.key == pygame.K_k:
                     if self.move_x == 0:
                         self.change_action('slash')
+                        self.slashing = True
                 if event.key == pygame.K_l:
                     self.change_action('close_slash')
                     self.slashing = True
@@ -83,6 +86,9 @@ class Character(pygame.sprite.Sprite):
 
                 if event.key == pygame.K_l:
                     self.slashing = False
+
+                if event.key == pygame.K_k:
+                    pass
 
 
     def applygravity(self):
@@ -158,24 +164,32 @@ class Character(pygame.sprite.Sprite):
         self.horizontal_movement_collition(tiles)
         self.vertical_movement_collition(tiles)
         if self.slashing:
-            animation_timer = 20
+            if self.action == 'slash':
+                animation_timer = 200
+            else:
+                animation_timer = 50
         else:
             animation_timer = 150
         slash_spawn_time = 100
         slash_wave = None
         if self.action == 'walk':
             self.change_action('walk')
-
         if self.action == 'idle':
             self.change_action('idle')
-
         if self.action == 'slash':
-            if (pygame.time.get_ticks() - self.slash_animation_tick) >= slash_spawn_time and not self.slashing and self.animation_index > 3:
+            if self.slashing and self.animation_index == 4:
                 print("creating Slash")
-                slash_wave = Projectile(self.weapons_animation_list,self.rect.centerx,self.rect.centery,self.slash_dir)
+                slash_wave = Projectile(self.weapon_1, self.rect.centerx, self.rect.centery, self.slash_dir)
                 self.slash_animation_tick = pygame.time.get_ticks()
-                #self.slashing = True
+                self.slashing = False
             self.change_action('slash')
+        if self.action == 'close_slash':
+            if self.animation_index == 4:
+                slash_wave = Slash_Static(self.weapon_2,(self.rect.centerx ),self.rect.centery,self.slash_dir,0)
+            elif self.animation_index == 8:
+                slash_wave = Slash_Static(self.weapon_2, (self.rect.centerx ), self.rect.centery,
+                                      self.slash_dir, 1)
+            self.change_action("close_slash")
 
 
         self.image = self.animation_list[self.action][self.animation_index]
@@ -202,7 +216,7 @@ class Character(pygame.sprite.Sprite):
         if self.action == new_action:
             pass
         else:
-            print(f"Changing Action from {self.action} to {new_action}")
+            print(f"{self.type} is cdhanging Action from {self.action} to {new_action}")
             self.action = new_action
             self.animation_index = 0
             self.update_time = pygame.time.get_ticks()

@@ -22,9 +22,9 @@ class Level:
                 y = row_index * TILE_SIZE
 
                 if cell == 'P':
-                    self.player = Character(x,y,"BladeArk","Straw_Hat_Samuray")
+                    self.player = Character(x,y,("BladeArk","white_static_slash"),"Straw_Hat_Samuray")
                 elif cell == 'S':
-                   skeleton = Skeleton(x, y, "PurpleSlash", 100, "skeleton")
+                   skeleton = Skeleton(x, y, "skeleton_static_slash", 100, "skeleton")
                    self.enemies.add(skeleton)
                 elif cell == ' ':
                     pass

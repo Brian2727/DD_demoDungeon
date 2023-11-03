@@ -14,16 +14,19 @@ def scale_img(img,scale):
 def load_animations(character,animation_Map):
     for animation in animation_Map.keys():
         print(animation)
-        for i in range(len(os.listdir(f"assets/images/characters/{character}/{animation}/"))):
-            image = pygame.image.load(f"assets/images/characters/{character}/{animation}/{i}.png").convert_alpha()
-            image = scale_img(image,SCALE)
-            animation_Map[animation].append(image)
+        try:
+            for i in range(len(os.listdir(f"assets/images/characters/{character}/{animation}/"))):
+                image = pygame.image.load(f"assets/images/characters/{character}/{animation}/{i}.png").convert_alpha()
+                image = scale_img(image,SCALE)
+                animation_Map[animation].append(image)
+        except:
+            animation_Map = None
     return animation_Map
 
-def load_weapon_animation(weapon):
+def load_weapon_animation(weapon,scale):
     slash_animation = []
     for i in range(len(os.listdir(f"assets/images/weapons/{weapon}/"))):
         image = pygame.image.load(f"assets/images/weapons/{weapon}/{i}.png").convert_alpha()
-        image = scale_img(image, WEAPON_SCALE)
+        image = scale_img(image, scale)
         slash_animation.append(image)
     return slash_animation
